@@ -42,7 +42,6 @@ public class CSVFileReader {
         public Information (int year, int quorter, int month, int week, int dayOfWeek, int day, String date, char holliday, int productId, String code, String producer,
                             String manufacrutingGroup, String category, String city, String providence, String region, String potential, String payment, String channel,
                             int amount, double price, double sellPrice, double costZM, double costST, double margin, double promotion, int county, int provinceNumber) {
-            this.year = year;
         }
 
         public int getYear() {
@@ -52,6 +51,87 @@ public class CSVFileReader {
         public void setYear() {
             this.year = year;
         }
+
+        public int getQuorter() {
+            return quorter;
+        }
+
+        public void setQuorter() {
+            this.quorter = quorter;
+        }
+
+        public int getMonth() {
+            return month;
+        }
+
+        public void setMonth() {
+            this.month = month;
+        }
+
+        public int getWeek() {
+            return week;
+        }
+
+        public void setWeek() {
+            this.week = week;
+        }
+
+        public int getDayOfWeek() {
+            return dayOfWeek;
+        }
+
+        public void setDayOfWeek() {
+            this.dayOfWeek = dayOfWeek;
+        }
+
+        public int getDay() {
+            return day;
+        }
+
+        public void setDay() {
+            this.day = day;
+        }
+
+        public String getDate() {
+            return date;
+        }
+
+        public void setDate() {
+            this.date = date;
+        }
+
+        public char getHolliday() {
+            return holliday;
+        }
+
+        public void setHolliday() {
+            this.holliday = holliday;
+        }
+
+        public int getProductId() {
+            return productId;
+        }
+
+        public void setProductId() {
+            this.productId = productId;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode() {
+            this.code = code;
+        }
+
+        public String getProducer() {
+            return producer;
+        }
+
+        public void setProducer() {
+            this.producer = producer;
+        }
+
 
 
     }
