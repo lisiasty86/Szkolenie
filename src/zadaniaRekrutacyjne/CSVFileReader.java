@@ -2,10 +2,12 @@ package zadaniaRekrutacyjne;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,9 +17,9 @@ public class CSVFileReader {
 
         List<Information> information = readInformationFromCSVFile("C:\\Users\\llis\\Desktop\\MOJE\\JAVA_SZKOLENIE\\SZKOLENIE\\New folder\\AGD_COMPLEX\\AGD_COMPLEX.csv");
 
-        for (Information i : information) {
+/*        for (Information i : information) {
             System.out.println(i);
-        }
+        }*/
 
     }
 
@@ -30,36 +32,40 @@ public class CSVFileReader {
 
 
 
-        try(BufferedReader bufferReader = Files.newBufferedReader(pathToFile, StandardCharsets.ISO_8859_1)){
+        try(BufferedReader bufferReader = Files.newBufferedReader(pathToFile, Charset.forName("cp1250"))){
 
 
             String headerline = bufferReader.readLine();
-
             String line = null;
 
             do {
                 line = bufferReader.readLine();
-                System.out.println(line);
+                System.out.println("Next line: " + line);
 
                 if (line == null) {
                     break;
                 }
                 String[] attributes = line.split(",");
+                String[] attributesAfterMySplit = new String[28];
+                for (int i=0, j=0, k=0; i<attributes.length; i++, j++) {
 
-                try {
-                    Information info = createInformation(attributes);
-                    information.add(info);
-                } catch (NumberFormatException nfe){
-                    //information.add(null);
-                    //nfe.printStackTrace();
+                    if (attributes[i].startsWith("\"")) {
 
+                        attributesAfterMySplit[j] = attributes[i]+"."+attributes[i+1];
+                        attributesAfterMySplit[j] = attributesAfterMySplit[j].replaceAll("\"", "").replace(" zł", "").replace(" ", "");
+                        i++;
+                        k++;
+                    } else {
+                        //System.out.println(attributesAfterMySplit[i]);
+                        attributesAfterMySplit[j] = attributes[i];
+                    }
+                    //System.out.println(k + ": " + line);
                 }
 
-                //Information info = createInformation(attributes);
+                Information info = createInformation(attributesAfterMySplit);
 
-                //information.add(info);
-            }
-            while (line == null);
+                information.add(info);
+            } while (line != null);
 
         } catch (IOException ioe) {
             ioe.printStackTrace();
@@ -69,16 +75,31 @@ public class CSVFileReader {
 
     }
 
+/*    public static String mySplit (String lineToSplit) {
+        String stringTableAfterSplit;
+
+
+        String x = "";
+        return stringTableAfterSplit;
+    }*/
+
     private static Information createInformation(String[] metadata){
-        int year = Integer.parseInt(metadata[0]);
-        int quorter = Integer.parseInt(metadata[1]);
-        int month = Integer.parseInt(metadata[2]);
-        int week = Integer.parseInt(metadata[3]);
-        int dayOfWeek = Integer.parseInt(metadata[4]);
-        int day = Integer.parseInt(metadata[5]);
+
+        for (int i=0; i<metadata.length; i++) {
+            if (metadata[i].equals("")) {
+                metadata[i] = "0";
+            }
+        }
+        
+        Integer year = Integer.valueOf(metadata[0]);
+        Integer quorter = Integer.valueOf(metadata[1]);
+        Integer month = Integer.valueOf(metadata[2]);
+        Integer week = Integer.valueOf(metadata[3]);
+        Integer dayOfWeek = Integer.valueOf(metadata[4]);
+        Integer day = Integer.valueOf(metadata[5]);
         String date = metadata[6];
         String holliday = metadata[7];
-        int productId = Integer.parseInt(metadata[8]);
+        Integer productId = Integer.valueOf(metadata[8]);
         String code = metadata[9];
         String producer = metadata[10];
         String manufacrutingGroup = metadata[11];
@@ -89,19 +110,53 @@ public class CSVFileReader {
         String potential = metadata[16];
         String payment = metadata[17];
         String channel = metadata[18];
-        int amount = Integer.parseInt(metadata[19]);
-        double price = Double.valueOf(metadata[20]);
-        double sellPrice = Double.valueOf(metadata[21]);
-        double costZM = Double.valueOf(metadata[22]);
-        double costST = Double.valueOf(metadata[23]);
-        double margin = Double.valueOf(metadata[24]);
-        double promotion = Double.valueOf(metadata[25]);
-        int county = Integer.parseInt(metadata[26]);
-        int provinceNumber = Integer.parseInt(metadata[27]);
+        Integer amount = parseInt(metadata[19]);
+        Double price = parseDouble((metadata[20]));
+        Double sellPrice = parseDouble(metadata[21]);
+        Double costZM = parseDouble(metadata[22]);
+        Double costST = parseDouble(metadata[23]);
+        Double margin = parseDouble(metadata[24]);
+        Double promotion = parseDouble(metadata[25]);
+        Integer county = Integer.valueOf(metadata[26]);
+        Integer provinceNumber = Integer.valueOf(metadata[27]);
 
         return new Information(year, quorter, month, week, dayOfWeek, day, date, holliday, productId, code, producer,
                 manufacrutingGroup, category, city, providence, region, potential, payment, channel,
                 amount, price, sellPrice, costZM, costST, margin, promotion, county, provinceNumber);
+
+
+    }
+
+    public static Integer parseInt (String metadata1) {
+        Integer parseStringToInt;
+
+        if (metadata1.equals("")) {
+            parseStringToInt = null;
+        } else {
+            parseStringToInt = Integer.parseInt(metadata1);
+        }
+
+
+        return parseStringToInt;
+    }
+
+    public static Double parseDouble (String metadata1) {
+        Double parseStringToDouble;
+
+        if (metadata1.equals("")) {
+            parseStringToDouble = null;
+        } else {
+            //metadata1 = metadata1.replace();
+            if (metadata1.contains("%")) {
+                metadata1 = metadata1.replace("%", "");
+                //metadata1 = metadata1/100;
+                parseStringToDouble = (Double.parseDouble(metadata1))/100;
+            } else {
+                parseStringToDouble = Double.parseDouble(metadata1);
+            }
+        }
+
+        return parseStringToDouble;
     }
 
 }
@@ -109,15 +164,15 @@ public class CSVFileReader {
 /** Information class is a schema based on which we will created object for each record */
 class Information {
 
-    private int year;
-    private int quorter;
-    private int month;
-    private int week;
-    private int dayOfWeek;
-    private int day;
+    private Integer year;
+    private Integer quorter;
+    private Integer month;
+    private Integer week;
+    private Integer dayOfWeek;
+    private Integer day;
     private String date;
     private String holliday;
-    private int productId;
+    private Integer productId;
     private String code;
     private String producer;
     private String manufacrutingGroup;
@@ -128,21 +183,21 @@ class Information {
     private String potential;
     private String payment;
     private String channel;
-    private int amount;
-    private double price;
-    private double sellPrice;
-    private double costZM;
-    private double costST;
-    private double margin;
-    private double promotion;
-    private int county;
-    private int provinceNumber;
+    private Integer amount;
+    private Double  price;
+    private Double  sellPrice;
+    private Double  costZM;
+    private Double  costST;
+    private Double  margin;
+    private Double  promotion;
+    private Integer county;
+    private Integer provinceNumber;
 
 
     /** Information constructior for Information class */
-    public Information(int year, int quorter, int month, int week, int dayOfWeek, int day, String date, String holliday, int productId, String code, String producer,
+    public Information(Integer year, Integer quorter, Integer month, Integer week, Integer dayOfWeek, Integer day, String date, String holliday, Integer productId, String code, String producer,
                        String manufacrutingGroup, String category, String city, String providence, String region, String potential, String payment, String channel,
-                       int amount, double price, double sellPrice, double costZM, double costST, double margin, double promotion, int county, int provinceNumber) {
+                       Integer amount, Double  price, Double  sellPrice, Double  costZM, Double  costST, Double  margin, Double  promotion, Integer county, Integer provinceNumber) {
 
         this.year = year;
         this.quorter = quorter;
@@ -174,7 +229,7 @@ class Information {
         this.provinceNumber = provinceNumber;
     }
 
-    public int getYear() {
+    public Integer getYear() {
         return year;
     }
 
@@ -182,7 +237,7 @@ class Information {
         this.year = year;
     }
 
-    public int getQuorter() {
+    public Integer getQuorter() {
         return quorter;
     }
 
@@ -190,7 +245,7 @@ class Information {
         this.quorter = quorter;
     }
 
-    public int getMonth() {
+    public Integer getMonth() {
         return month;
     }
 
@@ -198,7 +253,7 @@ class Information {
         this.month = month;
     }
 
-    public int getWeek() {
+    public Integer getWeek() {
         return week;
     }
 
@@ -206,7 +261,7 @@ class Information {
         this.week = week;
     }
 
-    public int getDayOfWeek() {
+    public Integer getDayOfWeek() {
         return dayOfWeek;
     }
 
@@ -214,7 +269,7 @@ class Information {
         this.dayOfWeek = dayOfWeek;
     }
 
-    public int getDay() {
+    public Integer getDay() {
         return day;
     }
 
@@ -238,7 +293,7 @@ class Information {
         this.holliday = holliday;
     }
 
-    public int getProductId() {
+    public Integer getProductId() {
         return productId;
     }
 
@@ -326,7 +381,7 @@ class Information {
         this.channel = channel;
     }
 
-    public int getAmount() {
+    public Integer getAmount() {
         return amount;
     }
 
@@ -334,7 +389,7 @@ class Information {
         this.amount = amount;
     }
 
-    public double getPrice() {
+    public Double  getPrice() {
         return price;
     }
 
@@ -342,7 +397,7 @@ class Information {
         this.price = price;
     }
 
-    public double getSellPrice() {
+    public Double  getSellPrice() {
         return sellPrice;
     }
 
@@ -350,7 +405,7 @@ class Information {
         this.sellPrice = sellPrice;
     }
 
-    public double getCostZM() {
+    public Double  getCostZM() {
         return costZM;
     }
 
@@ -358,7 +413,7 @@ class Information {
         this.costZM = costZM;
     }
 
-    public double getCostST() {
+    public Double  getCostST() {
         return costST;
     }
 
@@ -366,7 +421,7 @@ class Information {
         this.costST = costST;
     }
 
-    public double getMargin() {
+    public Double  getMargin() {
         return margin;
     }
 
@@ -374,7 +429,7 @@ class Information {
         this.margin = margin;
     }
 
-    public double getPromotion() {
+    public Double  getPromotion() {
         return promotion;
     }
 
@@ -382,7 +437,7 @@ class Information {
         this.promotion = promotion;
     }
 
-    public int getCounty() {
+    public Integer getCounty() {
         return county;
     }
 
@@ -390,7 +445,7 @@ class Information {
         this.county = county;
     }
 
-    public int getProvinceNumber() {
+    public Integer getProvinceNumber() {
         return provinceNumber;
     }
 
