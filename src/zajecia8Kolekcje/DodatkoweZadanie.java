@@ -1,5 +1,9 @@
 package zajecia8Kolekcje;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FilenameFilter;
+import java.io.PrintWriter;
 import java.util.*;
 
 /**
@@ -29,14 +33,14 @@ import java.util.*;
 
 public class DodatkoweZadanie {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, FileNotFoundException {
 
         smartThing();
 
     }
 
 
-    public static HashMap<Integer, String> smartThing() throws InterruptedException {
+    public static HashMap<Integer, String> smartThing() throws InterruptedException, FileNotFoundException {
         HashMap<Integer, String> smartThing = new HashMap<>();
         List<String> list = new ArrayList<>(Arrays.asList("0","1","2","3","4","8","9"));
 
@@ -44,6 +48,15 @@ public class DodatkoweZadanie {
         String noteGivenByUser;
         int counter = -1;
         int numberGivenByUser;
+
+
+        boolean test = checkFile();
+        if (test) {
+            createFile();
+        } else {
+            readFile();
+
+        }
 
         displayMenu();
         System.out.println("Current number of notes: " + smartThing.size());
@@ -127,10 +140,17 @@ public class DodatkoweZadanie {
                 System.out.println("Current number of notes: " + smartThing.size());
 
             } else if (optionSelectedByUser == 9) {
-                System.out.println("Please select which note you would like to update.");
+                System.out.println(smartThing);
+                System.out.println("Please select which note you would like to update.\n");
                 //scanUserInput();
                 numberGivenByUser = scanUserInput();
-
+                System.out.println("\nPlease type updated note.");
+                Scanner scanner5 = new Scanner(System.in);
+                noteGivenByUser = scanner5.nextLine();
+                smartThing.replace(numberGivenByUser, smartThing.get(numberGivenByUser), noteGivenByUser);
+                System.out.println("You have successfully updated note.");
+                displayMenu();
+                System.out.println("Current number of notes: " + smartThing.size());
             }
         }return smartThing;
 
@@ -162,5 +182,24 @@ public class DodatkoweZadanie {
             System.out.println("Please select new option.\n\n\n");
         }
         return option;
+    }
+
+    public static boolean checkFile() {
+        boolean checkFile = false;
+        File fileChecker = new File("/Users/lisek/IdeaProjects/Szkolenie/resources/");
+        File[] matches = fileChecker.listFiles((dir1, name) -> name.startsWith("notes") && name.endsWith(".txt"));
+        if (matches.length != 0) {
+            checkFile = true;
+        }
+        return checkFile;
+    }
+
+    public static void createFile() {
+        File fileCreator = new File("/Users/lisek/IdeaProjects/Szkolenie/resources/notes.txt");
+    }
+
+    public static void readFile() throws FileNotFoundException {
+        File fileToRead = new File("/Users/lisek/IdeaProjects/Szkolenie/resources/notes.txt");
+        Scanner in = new Scanner(fileToRead);
     }
 }
