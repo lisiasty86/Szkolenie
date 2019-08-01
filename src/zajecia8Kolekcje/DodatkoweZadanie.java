@@ -1,9 +1,6 @@
 package zajecia8Kolekcje;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -33,14 +30,14 @@ import java.util.*;
 
 public class DodatkoweZadanie {
 
-    public static void main(String[] args) throws InterruptedException, FileNotFoundException {
+    public static void main(String[] args) throws InterruptedException, IOException {
 
         smartThing();
 
     }
 
 
-    public static HashMap<Integer, String> smartThing() throws InterruptedException, FileNotFoundException {
+    public static HashMap<Integer, String> smartThing() throws InterruptedException, IOException {
         HashMap<Integer, String> smartThing = new HashMap<>();
         List<String> list = new ArrayList<>(Arrays.asList("0","1","2","3","4","8","9"));
 
@@ -49,14 +46,7 @@ public class DodatkoweZadanie {
         int counter = -1;
         int numberGivenByUser;
 
-
-        boolean test = checkFile();
-        if (test) {
-            createFile();
-        } else {
-            readFile();
-
-        }
+        updateFile(smartThing);
 
         displayMenu();
         System.out.println("Current number of notes: " + smartThing.size());
@@ -184,22 +174,31 @@ public class DodatkoweZadanie {
         return option;
     }
 
-    public static boolean checkFile() {
-        boolean checkFile = false;
-        File fileChecker = new File("/Users/lisek/IdeaProjects/Szkolenie/resources/");
-        File[] matches = fileChecker.listFiles((dir1, name) -> name.startsWith("notes") && name.endsWith(".txt"));
-        if (matches.length != 0) {
-            checkFile = true;
+
+    public static void updateFile(HashMap<Integer, String> hashMap) throws IOException {
+        Map<Integer, String> ldapContent = new HashMap<>();
+        Properties properties = new Properties();
+
+
+        File fileChecker = new File(System.getProperty("user.dir") + "/resources/notes.txt");
+        System.out.println(fileChecker);
+        //File fileChecker = new File("/Users/lisek/IdeaProjects/Szkolenie/resources/notes.txt");
+        //File[] matches = fileChecker.listFiles((dir1, name) -> name.startsWith("notes") && name.endsWith(".txt"));
+        if (!fileChecker.exists()) {
+            System.out.println("File not exist");
+            System.out.println(fileChecker);
+            fileChecker.createNewFile();
+            //properties.store(new FileOutputStream("/Users/lisek/IdeaProjects/Szkolenie/resources/notes.txt"), null);
+
+        } else {
+            System.out.println("File does exist");
+            //File fileCreator = new File("/Users/lukasz/IdeaProjects/Szkolenie/resources/notes.txt");
+            properties.store(new FileOutputStream("/Users/lukasz/IdeaProjects/Szkolenie/resources/notes.txt"), null);
+
         }
-        return checkFile;
-    }
+        properties.store(new FileOutputStream("/Users/lukasz/IdeaProjects/Szkolenie/resources/notes.txt"), null);
 
-    public static void createFile() {
-        File fileCreator = new File("/Users/lisek/IdeaProjects/Szkolenie/resources/notes.txt");
-    }
+        properties.putAll(ldapContent);
 
-    public static void readFile() throws FileNotFoundException {
-        File fileToRead = new File("/Users/lisek/IdeaProjects/Szkolenie/resources/notes.txt");
-        Scanner in = new Scanner(fileToRead);
     }
 }
