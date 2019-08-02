@@ -1,6 +1,9 @@
 package zajecia8Kolekcje;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -36,7 +39,6 @@ public class DodatkoweZadanie {
 
     }
 
-
     public static HashMap<Integer, String> smartThing() throws InterruptedException, IOException {
         HashMap<Integer, String> smartThing = new HashMap<>();
         List<String> list = new ArrayList<>(Arrays.asList("0","1","2","3","4","8","9"));
@@ -46,7 +48,19 @@ public class DodatkoweZadanie {
         int counter = -1;
         int numberGivenByUser;
 
-        updateFile(smartThing);
+        File fileChecker = new File(System.getProperty("user.dir") + "/resources/notes.txt");
+        System.out.println(fileChecker);
+        boolean test = fileChecker.exists();
+        if (!test) {
+            System.out.println("File not exist");
+            System.out.println(fileChecker);
+            fileChecker.createNewFile();
+        } else {
+            System.out.println("File does exist");
+            //fileReader();
+            smartThing.putAll(fileReader());
+            counter = smartThing.size()-1;
+        }
 
         displayMenu();
         System.out.println("Current number of notes: " + smartThing.size());
@@ -107,11 +121,12 @@ public class DodatkoweZadanie {
                 }            displayMenu();
                 System.out.println("Current number of notes: " + smartThing.size());
             } else if (optionSelectedByUser == 0) {
-                System.out.println("Are you sure you want to remove all notes?");
+                System.out.println("Are you sure you want to close the program?");
                 System.out.println("Please type \"Y\" in case of Yes and \"N\" in case of No.");
                 Scanner scanner5 = new Scanner(System.in);
                 decissionMadeByUser = scanner5.nextLine().toLowerCase();
                 if (decissionMadeByUser.equals("y")) {
+                    updateFile(smartThing);
                     System.out.println("Thank you for play :)");
                     Thread.sleep(1000);
                     break;
@@ -141,6 +156,8 @@ public class DodatkoweZadanie {
                 System.out.println("You have successfully updated note.");
                 displayMenu();
                 System.out.println("Current number of notes: " + smartThing.size());
+            } else if (optionSelectedByUser == 7) {
+
             }
         }return smartThing;
 
@@ -153,6 +170,7 @@ public class DodatkoweZadanie {
         System.out.println("   2. Remove note");
         System.out.println("   3. List of notes");
         System.out.println("   4. Remove all notes");
+        System.out.println("   7. Display number of all words");
         System.out.println("   8. Display random note");
         System.out.println("   9. Update selected note");
         System.out.println("   0. Close the program\n\n\n");
@@ -174,31 +192,56 @@ public class DodatkoweZadanie {
         return option;
     }
 
-
     public static void updateFile(HashMap<Integer, String> hashMap) throws IOException {
         Map<Integer, String> ldapContent = new HashMap<>();
-        Properties properties = new Properties();
+        String filePath = "C:\\Users\\llis\\Desktop\\MOJE\\PROGRAMOWANIE\\AUTOMATY\\Szkolenie\\resources\\notes.txt";
 
-
-        File fileChecker = new File(System.getProperty("user.dir") + "/resources/notes.txt");
-        System.out.println(fileChecker);
-        //File fileChecker = new File("/Users/lisek/IdeaProjects/Szkolenie/resources/notes.txt");
-        //File[] matches = fileChecker.listFiles((dir1, name) -> name.startsWith("notes") && name.endsWith(".txt"));
-        if (!fileChecker.exists()) {
-            System.out.println("File not exist");
-            System.out.println(fileChecker);
-            fileChecker.createNewFile();
-            //properties.store(new FileOutputStream("/Users/lisek/IdeaProjects/Szkolenie/resources/notes.txt"), null);
-
-        } else {
-            System.out.println("File does exist");
-            //File fileCreator = new File("/Users/lukasz/IdeaProjects/Szkolenie/resources/notes.txt");
-            properties.store(new FileOutputStream("/Users/lukasz/IdeaProjects/Szkolenie/resources/notes.txt"), null);
-
+        for (int j=0; j<hashMap.size(); j++) {
+            ldapContent.put(j, hashMap.get(j));
         }
-        properties.store(new FileOutputStream("/Users/lukasz/IdeaProjects/Szkolenie/resources/notes.txt"), null);
 
-        properties.putAll(ldapContent);
+        int recordToPrint = ldapContent.size();
+        FileWriter fileWriter = new FileWriter(filePath);
+        BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+        int count = 0;
+
+        Iterator<Map.Entry<Integer, String>> it = ldapContent.entrySet().iterator();
+
+        while (it.hasNext() && count < recordToPrint) {
+
+            Map.Entry<Integer, String> pairs = it.next();
+            System.out.println("Value is " + pairs.getValue());
+
+            bufferedWriter.write(pairs.getKey() + "," + pairs.getValue() + "\n");
+            count++;
+        } bufferedWriter.close();
+    }
+
+    public static Map<Integer, String> fileReader() throws IOException {
+        Map<Integer, String> mapToKeepFile = new HashMap<>();
+        String filePath = "C:\\Users\\llis\\Desktop\\MOJE\\PROGRAMOWANIE\\AUTOMATY\\Szkolenie\\resources\\notes.txt";
+
+        String line;
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath));
+
+        while ((line = bufferedReader.readLine()) != null) {
+            String[] parts = line.split(",", 2);
+            if (parts.length >= 2) {
+                String key = parts[0];
+                String value = parts[1];
+                mapToKeepFile.put(Integer.valueOf(key), value);
+            } else {
+                System.out.println("ignoring line: " + line);
+            }
+        }
+
+        for (Integer key : mapToKeepFile.keySet()) {
+            System.out.println(key + ":" + mapToKeepFile.get(key));
+        }
+        bufferedReader.close();
+        return mapToKeepFile;
 
     }
+
 }
+
