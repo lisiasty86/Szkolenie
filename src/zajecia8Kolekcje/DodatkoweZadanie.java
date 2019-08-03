@@ -46,7 +46,8 @@ public class DodatkoweZadanie {
         int optionSelectedByUser;
         String noteGivenByUser;
         int counter = -1;
-        int numberGivenByUser;
+        int numberGivenByUser = -1;
+        String decissionMadeByUser;
 
         File fileChecker = new File(System.getProperty("user.dir") + "/resources/notes.txt");
         System.out.println(fileChecker);
@@ -67,6 +68,8 @@ public class DodatkoweZadanie {
 
         for (; ; ) {
 
+
+
             try {
                 optionSelectedByUser = scanUserInput();
             } catch (Exception e) {
@@ -75,7 +78,7 @@ public class DodatkoweZadanie {
                 continue;
             }
 
-            String decissionMadeByUser;
+
             System.out.println("Selected option: " + optionSelectedByUser);
 
 
@@ -157,7 +160,21 @@ public class DodatkoweZadanie {
                 displayMenu();
                 System.out.println("Current number of notes: " + smartThing.size());
             } else if (optionSelectedByUser == 7) {
+                String words = "";
+                char blankSign = ' ';
+                int numberOfWords = 1;
+                for (int x=0; x<smartThing.size(); x++) {
+                    words = words + (smartThing.get(x) + " ");
+                }
+                System.out.println(words);
 
+                for (int y=0; y<words.length()-1; y++) {
+                    if (words.charAt(y) == blankSign && words.charAt(y+1) != blankSign && Character.isLetter(words.charAt(y+1))){
+                        numberOfWords++;
+                    }
+                }
+
+                System.out.println("Number of all words is: " + numberOfWords);
             }
         }return smartThing;
 
@@ -194,7 +211,7 @@ public class DodatkoweZadanie {
 
     public static void updateFile(HashMap<Integer, String> hashMap) throws IOException {
         Map<Integer, String> ldapContent = new HashMap<>();
-        String filePath = "C:\\Users\\llis\\Desktop\\MOJE\\PROGRAMOWANIE\\AUTOMATY\\Szkolenie\\resources\\notes.txt";
+        String filePath = "/Users/lukasz/IdeaProjects/Szkolenie/resources/notes.txt";
 
         for (int j=0; j<hashMap.size(); j++) {
             ldapContent.put(j, hashMap.get(j));
@@ -219,7 +236,7 @@ public class DodatkoweZadanie {
 
     public static Map<Integer, String> fileReader() throws IOException {
         Map<Integer, String> mapToKeepFile = new HashMap<>();
-        String filePath = "C:\\Users\\llis\\Desktop\\MOJE\\PROGRAMOWANIE\\AUTOMATY\\Szkolenie\\resources\\notes.txt";
+        String filePath = "/Users/lukasz/IdeaProjects/Szkolenie/resources/notes.txt";
 
         String line;
         BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath));
@@ -242,6 +259,5 @@ public class DodatkoweZadanie {
         return mapToKeepFile;
 
     }
-
 }
 
